@@ -4,12 +4,12 @@ CLASS_NAME_ANDROID = "android"
 CLASS_NAME_APP = "com.instagram.android"
 CLASS_NAME_BUTTON = "android.widget.Button"
 CLASS_NAME_TEXT = "android.widget.TextView"
+CLASS_NAME_LIST_VIEW = "android.widget.ListView"
+CLASS_NAME_LINEAR_LAYOUT = "android.widget.LinearLayout"
+CLASS_NAME_FRAME_LAYOUT = "android.widget.FrameLayout"
 
 # ID Tabs
 ID_TAB_PROFILE = "profile_tab"
-ID_TAB_PROFILE_MENU = "profile_menu"
-# ID Menus
-ID_MENU_OPTION = "menu_option_text"
 # ID Texts
 ID_TEXT_NICKNAME = "action_bar_large_title_auto_size"
 ID_TEXT_FULLNAME = "profile_header_full_name"
