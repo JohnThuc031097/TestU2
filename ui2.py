@@ -17,8 +17,7 @@ def switchPostInSaved(index):
 
 def switchSaved():
     util.logger('Switch saved')
-    return getDataListFromIdDevice().child(
-        className=CLASS_NAME_BUTTON)[INDEX_MENU_OPTION_SAVED].click()
+    return getDataListFromIdDevice().child(className=CLASS_NAME_LINEAR_LAYOUT)[INDEX_MENU_OPTION_SAVED].click()
 
 
 def switchUser(index):
@@ -28,6 +27,21 @@ def switchUser(index):
     users = getDataFromId("row_user_textview")
     util.logger('Switch user %d' % index)
     return users[index].click()
+
+
+def getLinkVideo():
+    while(getDataFromId("feed_more_button_stub") == None):
+        util.logger('Waitting ...')
+        sleep(2.5)
+    getDataFromId('feed_more_button_stub').click()
+    while(getDataFromId("action_sheet_row_text_view") == None):
+        util.logger('Waitting ...')
+        sleep(2.5)
+    getDataFromId(
+        'action_sheet_row_text_view', 'full', 'Copy Link').click()
+    sleep(2.5)
+    util.logger(str(dUi2.clipboard).replace(
+        'https://www.instagram.com/tv/', '').replace('/?utm_medium=copy_link', ''))
 
 
 def showTab(tab):
@@ -74,8 +88,12 @@ def getDataListFromIdDevice(device=None):
         return device.child(className=CLASS_NAME_LIST_VIEW, resourceId=CLASS_NAME_ANDROID + ":id/list")
 
 
-def getDataFromId(id, type="full"):
-    resultInfo = dUi2(resourceId=CLASS_NAME_APP + ":id/" + id)
+def getDataFromId(id, type="full", text=''):
+    resultInfo = None
+    if(text == ''):
+        resultInfo = dUi2(resourceId=CLASS_NAME_APP + ":id/" + id)
+    else:
+        resultInfo = dUi2(resourceId=CLASS_NAME_APP + ":id/" + id, text=text)
     if(resultInfo.exists):
         if type == "full":
             return resultInfo
