@@ -1,6 +1,9 @@
-from time import sleep
 import uiautomator2 as u2
 import util
+
+import re
+import requests
+from time import sleep
 
 from consts import *
 
@@ -40,8 +43,19 @@ def getLinkVideo():
     getDataFromId(
         'action_sheet_row_text_view', 'full', 'Copy Link').click()
     sleep(2.5)
-    util.logger(str(dUi2.clipboard).replace(
-        'https://www.instagram.com/tv/', '').replace('/?utm_medium=copy_link', ''))
+
+    util.logger(dUi2.clipboard)
+    code = str(dUi2.clipboard).replace(
+        'https://www.instagram.com/tv/', '').replace('/?utm_medium=copy_link', '')
+    linkVideo = 'https://www.instagram.com/p/{0}'.format(code)
+    util.logger(linkVideo)
+    """"
+    r = requests.get(linkVideo)
+    match = re.findall(
+        'video_url\W\W\W([-\W\w]+)\W\W\Wvideo_view_count', r.text)
+    util.logger(match)
+    util.logger(result.replace('\u0026', '&'))
+    """
 
 
 def showTab(tab):
