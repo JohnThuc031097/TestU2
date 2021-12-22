@@ -1,10 +1,7 @@
-import uiautomator2 as u2
-import util
-
-import re
-import requests
 from time import sleep
 
+import uiautomator2 as u2
+import util
 from consts import *
 
 dUi2 = u2.connect()
@@ -20,7 +17,7 @@ def switchPostInSaved(index):
 
 def switchSaved():
     util.logger('Switch saved')
-    return getDataListFromIdDevice().child(className=CLASS_NAME_LINEAR_LAYOUT)[INDEX_MENU_OPTION_SAVED].click()
+    return getDataListFromIdDevice().child(className=CLASS_NAME_BUTTON)[INDEX_MENU_OPTION_SAVED].click()
 
 
 def switchUser(index):
@@ -32,7 +29,7 @@ def switchUser(index):
     return users[index].click()
 
 
-def getLinkVideo():
+def getLinkVideo(username):
     while(getDataFromId("feed_more_button_stub") == None):
         util.logger('Waitting ...')
         sleep(2.5)
@@ -43,19 +40,14 @@ def getLinkVideo():
     getDataFromId(
         'action_sheet_row_text_view', 'full', 'Copy Link').click()
     sleep(2.5)
-
-    util.logger(dUi2.clipboard)
+    util.logger('Waitting get code video ...')
     code = str(dUi2.clipboard).replace(
-        'https://www.instagram.com/tv/', '').replace('/?utm_medium=copy_link', '')
-    linkVideo = 'https://www.instagram.com/p/{0}'.format(code)
-    util.logger(linkVideo)
-    """"
-    r = requests.get(linkVideo)
-    match = re.findall(
-        'video_url\W\W\W([-\W\w]+)\W\W\Wvideo_view_count', r.text)
-    util.logger(match)
-    util.logger(result.replace('\u0026', '&'))
-    """
+        'https://www.instagram.com/tv/', '').replace(
+        'https://www.instagram.com/reel/', '').replace('/?utm_medium=copy_link', '')
+    util.logger('Code video: %s' % code)
+    pathFile = util.downloadVideoIG(username, code)
+    if pathFile != None:
+        util.logger('Download video successfull: %s' % pathFile)
 
 
 def showTab(tab):
@@ -77,17 +69,17 @@ def getInfoUser():
         util.logger('Waitting ...')
         sleep(2.5)
     getDataFromId(ID_TAB_PROFILE).click()
-    while(getDataFromId(ID_TEXT_NICKNAME, "text") == None):
+    while(getDataFromId(ID_TEXT_USERNAME, "text") == None):
         util.logger('Waitting ...')
         sleep(2.5)
     util.logger('Get info user')
-    nickname = getDataFromId(ID_TEXT_NICKNAME, "text")
+    username = getDataFromId(ID_TEXT_USERNAME, "text")
     fullname = getDataFromId(ID_TEXT_FULLNAME, "text")
     posts = getDataFromId(ID_TEXT_COUNT_POSTS, "text")
     followers = getDataFromId(ID_TEXT_COUNT_FOLLOWERS, "text")
     following = getDataFromId(ID_TEXT_COUNT_FOLLOWING, "text")
     return {
-        'nickname': nickname,
+        'username': username,
         'fullname': fullname,
         'posts': posts,
         'followers': followers,

@@ -11,7 +11,7 @@ CLASS_NAME_FRAME_LAYOUT = "android.widget.FrameLayout"
 # ID Tabs
 ID_TAB_PROFILE = "profile_tab"
 # ID Texts
-ID_TEXT_NICKNAME = "action_bar_large_title_auto_size"
+ID_TEXT_USERNAME = "action_bar_large_title_auto_size"
 ID_TEXT_FULLNAME = "profile_header_full_name"
 ID_TEXT_COUNT_POSTS = "row_profile_header_textview_post_count"
 ID_TEXT_COUNT_FOLLOWERS = "row_profile_header_textview_followers_count"
