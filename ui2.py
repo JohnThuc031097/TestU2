@@ -17,7 +17,10 @@ def switchPostInSaved(index):
 
 def switchSaved():
     util.logger('Switch saved')
-    return getDataListFromIdDevice().child(className=CLASS_NAME_BUTTON)[INDEX_MENU_OPTION_SAVED].click()
+    dataList = getDataListFromIdDevice()
+    if dataList.child(className=CLASS_NAME_BUTTON):
+        return dataList.child(className=CLASS_NAME_BUTTON)[INDEX_MENU_OPTION_SAVED].click()
+    return dataList.child(className=CLASS_NAME_LINEAR_LAYOUT)[INDEX_MENU_OPTION_SAVED].click()
 
 
 def switchUser(index):
@@ -40,14 +43,15 @@ def getLinkVideo(username):
     getDataFromId(
         'action_sheet_row_text_view', 'full', 'Copy Link').click()
     sleep(2.5)
-    util.logger('Waitting get code video ...')
-    code = str(dUi2.clipboard).replace(
-        'https://www.instagram.com/tv/', '').replace(
-        'https://www.instagram.com/reel/', '').replace('/?utm_medium=copy_link', '')
-    util.logger('Code video: %s' % code)
-    pathFile = util.downloadVideoIG(username, code)
-    if pathFile != None:
-        util.logger('Download video successfull: %s' % pathFile)
+    code = util.getCodeFromLink(dUi2.clipboard)
+    video = util.downloadVideoIG(username, code)
+    if video != []:
+        util.logger('Download video successfull: %s' % video)
+        util.logger('Push file mp4 to phone ...')
+        result = dUi2.push(video[0] + '\\' + video[1],
+                           util.PATH_SAVE_FILE_MEDIA_ON_PHONE + username + '/' + video[0] + '.mp4')
+        if result != None:
+            util.logger(result)
 
 
 def showTab(tab):
