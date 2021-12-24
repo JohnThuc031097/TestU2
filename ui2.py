@@ -44,13 +44,17 @@ def getLinkVideo(username):
         'action_sheet_row_text_view', 'full', 'Copy Link').click()
     sleep(2.5)
     code = util.getCodeFromLink(dUi2.clipboard)
-    video = util.downloadVideoIG(username, code)
-    if video != []:
-        util.logger('Download video successfull: %s' % video)
+    resultDonwload = util.downloadVideoIG(username, code)
+    if resultDonwload == None:
+        util.logger('Download video failed')
+    else:
+        util.logger('Download video successfull: %s' % resultDonwload)
         util.logger('Push file mp4 to phone ...')
-        result = dUi2.push(video[0] + '\\' + video[1],
-                           util.PATH_SAVE_FILE_MEDIA_ON_PHONE + username + '/' + video[0] + '.mp4')
-        if result != None:
+        result = dUi2.push(
+            resultDonwload, '{}/{}/{}.mp4'.format(util.PATH_SAVE_FILE_MEDIA_ON_PHONE, username, code))
+        if result == None:
+            util.logger('Error push file mp4 to phone!')
+        else:
             util.logger(result)
 
 

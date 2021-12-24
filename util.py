@@ -1,4 +1,3 @@
-from logging import log
 import instaloader
 
 import glob
@@ -6,7 +5,9 @@ import os
 import json
 from datetime import datetime
 
-FILE_SETTING = 'setting.json'
+FILE_NAME_SETTING = 'settings.json'
+FOLDER_NAME_SESSIONS = 'sessions'
+FOLDER_NAME_VIDEOS = 'videos'
 WEB_HOST = 'https://www.instagram.com'
 PATH_SAVE_FILE_MEDIA_ON_PHONE = '/sdcard/AutoBot/'
 
@@ -31,27 +32,42 @@ def getCodeFromLink(link):
 
 def downloadVideoIG(username, code):
     try:
-        result = []
+        result = None
         if not os.path.isdir(code):
+            # Load account from file settings JSON
             account = loadJson()['account']
             if account != None:
+                # Get path file session
+                fileSession = '{}\{}'.format(FOLDER_NAME_SESSIONS, username)
                 L = instaloader.Instaloader()
-                # L.login(username, account[username])
-                L.load_session_from_file()
+                # Check exist file session
+                if not os.path.isfile(fileSession):
+                    logger(
+                        'Not found file session. Tool will create new file sessions')
+                    L.login(username, account[username])
+                    L.save_session_to_file(fileSession)
+                L.load_session_from_file(username, fileSession)
+                if L.test_login() == None:
+                    L.login(username, account[username])
+                    L.save_session_to_file(fileSession)
+                    L.load_session_from_file(username, fileSession)
+                    if L.test_login() == None:
+                        return result
+
                 profile = instaloader.Profile.from_username(
                     L.context, username)
                 for saved_post in profile.get_saved_posts():
                     if code == saved_post.shortcode:
-                        result = L.download_post(
-                            saved_post, saved_post.shortcode)
-                        if not result:
-                            return logger('Error download video')
-                        pathFile = str(saved_post.date_utc).replace(
-                            ' ', '_').replace(':', '-') + '_UTC.mp4'
-                        result = [code, pathFile]
+                        if L.download_post(saved_post, '{}\{}\{}'.format(FOLDER_NAME_VIDEOS, username, saved_post.shortcode)):
+                            nameVideoSaved = str(saved_post.date_utc).replace(
+                                ' ', '_').replace(':', '-')
+                            result = '{}\{}\{}\{}_UTC.mp4'.format(
+                                FOLDER_NAME_VIDEOS, username,  saved_post.shortcode, nameVideoSaved)
+                        break
         else:
             logger('Video file already exists => skipping ...')
-            result = [code, str(glob.glob(code + "/*.mp4")[0]).split('\\')[1]]
+            result = str(
+                glob.glob('{}\{}\{}\*.mp4'.format(FOLDER_NAME_VIDEOS, username, code))[0])
     except Exception as err:
         logger('Error download video: {}'.format(err))
     return result
@@ -59,7 +75,7 @@ def downloadVideoIG(username, code):
 
 def loadJson():
     try:
-        with open(FILE_SETTING) as f:
+        with open(FILE_NAME_SETTING) as f:
             return json.load(f)
     except Exception as err:
         logger('Error load json: {}'.format(err))
