@@ -4,7 +4,9 @@ import uiautomator2 as u2
 import util
 from consts import *
 
-dUi2 = u2.connect()
+d = u2.connect()
+sessApp = d.session(CLASS_NAME_APP, attach=True)
+sessApp.make_toast('Auto Bot start attach Intagram', 2)
 
 
 def switchPostInSaved(index):
@@ -43,15 +45,16 @@ def getLinkVideo(username):
     getDataFromId(
         'action_sheet_row_text_view', 'full', 'Copy Link').click()
     sleep(2.5)
-    code = util.getCodeFromLink(dUi2.clipboard)
+    code = util.getCodeFromLink(d.clipboard)
     resultDonwload = util.downloadVideoIG(username, code)
     if resultDonwload == None:
         util.logger('Download video failed')
     else:
         util.logger('Download video successfull: %s' % resultDonwload)
-        util.logger('Push file mp4 to phone ...')
-        result = dUi2.push(
-            resultDonwload, '{}/{}/{}.mp4'.format(util.PATH_SAVE_FILE_MEDIA_ON_PHONE, username, code))
+        fileName = '/{}/{}/{}.mp4'.format(
+            util.PATH_SAVE_FILE_MEDIA_ON_PHONE, username, code)
+        util.logger('Push mp4 files to phone internal storage ...')
+        result = d.push(resultDonwload, fileName, 420, True)
         if result == None:
             util.logger('Error push file mp4 to phone!')
         else:
@@ -64,8 +67,8 @@ def showTab(tab):
         return getDataFromId(ID_TAB_PROFILE).long_click()
     elif (tab == 'option'):
         util.logger('Show tab switch option')
-        return dUi2(description=DESC_BUTTON_OPTION,
-                    className=CLASS_NAME_BUTTON).click()
+        return d(description=DESC_BUTTON_OPTION,
+                 className=CLASS_NAME_BUTTON).click()
     elif (tab == 'all_post_saved'):
         util.logger('Show tab switch all_post_saved')
         getDataListFromIdDevice().child(className=CLASS_NAME_LINEAR_LAYOUT).child(
@@ -97,7 +100,7 @@ def getInfoUser():
 
 def getDataListFromIdDevice(device=None):
     if not device:
-        return dUi2(className=CLASS_NAME_LIST_VIEW, resourceId=CLASS_NAME_ANDROID + ":id/list")
+        return sessApp(className=CLASS_NAME_LIST_VIEW, resourceId=CLASS_NAME_ANDROID + ":id/list")
     else:
         return device.child(className=CLASS_NAME_LIST_VIEW, resourceId=CLASS_NAME_ANDROID + ":id/list")
 
@@ -105,9 +108,10 @@ def getDataListFromIdDevice(device=None):
 def getDataFromId(id, type="full", text=''):
     resultInfo = None
     if(text == ''):
-        resultInfo = dUi2(resourceId=CLASS_NAME_APP + ":id/" + id)
+        resultInfo = sessApp(resourceId=CLASS_NAME_APP + ":id/" + id)
     else:
-        resultInfo = dUi2(resourceId=CLASS_NAME_APP + ":id/" + id, text=text)
+        resultInfo = sessApp(resourceId=CLASS_NAME_APP +
+                             ":id/" + id, text=text)
     if(resultInfo.exists):
         if type == "full":
             return resultInfo

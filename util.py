@@ -3,13 +3,14 @@ import instaloader
 import glob
 import os
 import json
+import pathlib
 from datetime import datetime
 
 FILE_NAME_SETTING = 'settings.json'
 FOLDER_NAME_SESSIONS = 'sessions'
 FOLDER_NAME_VIDEOS = 'videos'
 WEB_HOST = 'https://www.instagram.com'
-PATH_SAVE_FILE_MEDIA_ON_PHONE = '/sdcard/AutoBot/'
+PATH_SAVE_FILE_MEDIA_ON_PHONE = 'sdcard/AutoBot'
 
 
 def logger(object, showTime=True):
@@ -33,7 +34,7 @@ def getCodeFromLink(link):
 def downloadVideoIG(username, code):
     try:
         result = None
-        if not os.path.isdir(code):
+        if not os.path.isdir('{}\{}\{}'.format(FOLDER_NAME_VIDEOS, username, code)):
             # Load account from file settings JSON
             account = loadJson()['account']
             if account != None:
@@ -58,7 +59,7 @@ def downloadVideoIG(username, code):
                     L.context, username)
                 for saved_post in profile.get_saved_posts():
                     if code == saved_post.shortcode:
-                        if L.download_post(saved_post, '{}\{}\{}'.format(FOLDER_NAME_VIDEOS, username, saved_post.shortcode)):
+                        if L.download_post(saved_post, pathlib.Path('{}\{}\{}'.format(FOLDER_NAME_VIDEOS, username, saved_post.shortcode))):
                             nameVideoSaved = str(saved_post.date_utc).replace(
                                 ' ', '_').replace(':', '-')
                             result = '{}\{}\{}\{}_UTC.mp4'.format(
@@ -66,8 +67,8 @@ def downloadVideoIG(username, code):
                         break
         else:
             logger('Video file already exists => skipping ...')
-            result = str(
-                glob.glob('{}\{}\{}\*.mp4'.format(FOLDER_NAME_VIDEOS, username, code))[0])
+            result = glob.glob(
+                '{}\{}\{}\*.mp4'.format(FOLDER_NAME_VIDEOS, username, code))[0]
     except Exception as err:
         logger('Error download video: {}'.format(err))
     return result
