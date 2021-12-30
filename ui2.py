@@ -19,7 +19,7 @@ def switchPostInSaved(index):
 
 def switchSaved():
     util.logger('Switch saved')
-    dataList = getDataListFromIdDevice()
+    dataList = getDataFromId('recycler_view')
     if dataList.child(className=CLASS_NAME_BUTTON):
         return dataList.child(className=CLASS_NAME_BUTTON)[INDEX_MENU_OPTION_SAVED].click()
     return dataList.child(className=CLASS_NAME_LINEAR_LAYOUT)[INDEX_MENU_OPTION_SAVED].click()
@@ -45,7 +45,8 @@ def getLinkVideo(username):
     getDataFromId(
         'action_sheet_row_text_view', 'full', 'Copy Link').click()
     sleep(2.5)
-    code = util.getCodeFromLink(d.clipboard)
+
+    code = util.getCodeFromLink(sessApp.clipboard)
     resultDonwload = util.downloadVideoIG(username, code)
     if resultDonwload == None:
         util.logger('Download video failed')
@@ -54,7 +55,7 @@ def getLinkVideo(username):
         fileName = '/{}/{}/{}.mp4'.format(
             util.PATH_SAVE_FILE_MEDIA_ON_PHONE, username, code)
         util.logger('Push mp4 files to phone internal storage ...')
-        result = d.push(resultDonwload, fileName, 420, True)
+        result = sessApp.push(resultDonwload, fileName, 420, True)
         if result == None:
             util.logger('Error push file mp4 to phone!')
         else:
@@ -67,8 +68,8 @@ def showTab(tab):
         return getDataFromId(ID_TAB_PROFILE).long_click()
     elif (tab == 'option'):
         util.logger('Show tab switch option')
-        return d(description=DESC_BUTTON_OPTION,
-                 className=CLASS_NAME_BUTTON).click()
+        return sessApp(description=DESC_BUTTON_OPTION,
+                       className=CLASS_NAME_BUTTON).click()
     elif (tab == 'all_post_saved'):
         util.logger('Show tab switch all_post_saved')
         getDataListFromIdDevice().child(className=CLASS_NAME_LINEAR_LAYOUT).child(

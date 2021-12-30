@@ -22,6 +22,7 @@ def logger(object, showTime=True):
 
 
 def getCodeFromLink(link):
+    logger('Start handle video link: {}'.format(link))
     if str(link).find(WEB_HOST, 0) != -1:
         codeTmp = str(link).replace(
             '/?utm_medium=copy_link', '').split('/')
@@ -48,11 +49,13 @@ def downloadVideoIG(username, code):
                     L.login(username, account[username])
                     L.save_session_to_file(fileSession)
                 L.load_session_from_file(username, fileSession)
-                if L.test_login() == None:
+                testLogin = L.test_login()
+                if testLogin == None:
                     L.login(username, account[username])
                     L.save_session_to_file(fileSession)
                     L.load_session_from_file(username, fileSession)
-                    if L.test_login() == None:
+                    testLogin = L.test_login()
+                    if testLogin == None:
                         return result
 
                 profile = instaloader.Profile.from_username(
