@@ -1,8 +1,8 @@
 {
-    "account": {
-        "johnthuc03101997": "John@Thuc@0310",
-        "iubetram": "John@Thuc@0310"
-    },
+    "users": [
+        "johnthuc03101997",
+        "iubetram"
+    ],
     "post": {
         "1": "From @",
         "2": [
