@@ -15,3 +15,10 @@ class HandleU2:
     def find_by_desc(self, desc):
         return self.sess(
             packageName=PACKGE_NAME, description=desc)
+
+    def find_child_by_id(self, parent, id_child):
+        return parent.sibling(packageName=PACKGE_NAME, resourceId='{}:id/{}'.format(PACKGE_NAME, id_child))
+
+    def find_child_by_class(self, class_name):
+        return self.sess(
+            packageName=PACKGE_NAME, className=class_name)
