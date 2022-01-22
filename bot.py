@@ -49,15 +49,15 @@ class BotInstagram:
         item_selected.click_exists(timeout=2)
 
     def get_items_videos_saved(self):
+        result = []
         id_items_videos_saved = self.bot.find_by_id(
             'clips_tab_grid_recyclerview')
         if id_items_videos_saved.exists(timeout=2):
             items = self.bot.find_child_by_class(
                 id_items_videos_saved, 'android.widget.RelativeLayout')
             if items.exists(timeout=2):
-                util.logger(items.count)
-                return items.count
-        return 0
+                result = items
+        return result
 
     def get_users(self):
         util.logger('Get users')
@@ -67,8 +67,6 @@ class BotInstagram:
         users = self.bot.find_by_id('row_user_textview')
         if users.exists(timeout=2):
             if users.count > 2:
-                util.logger(users.count)
                 for i in range(users.count-1):
                     data_users[users[i].info['text']] = users[i]
-        util.logger(0)
         return data_users

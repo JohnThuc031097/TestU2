@@ -1,4 +1,4 @@
-from random import random
+import random
 from bot import BotInstagram
 from consts import *
 import util
@@ -10,11 +10,12 @@ if json_setting != None:
     users = bot.get_users()
     if len(json_setting['users']) > 0:
         for name in json_setting['users']:
-            user_crr = users[name]
-            bot.set_user(user_crr)
-            bot.switch_screen(ID_SCREEN_OPTIONS)
-            bot.switch_screen(ID_SCREEN_VIDEOS_SAVED)
-            items = bot.get_items_videos_saved()
-            index_random = random.randint(0, items-1)
-            bot.select_item_video_saved(items[index_random])
-            break
+            if users[name]:
+                bot.set_user(users[name])
+                bot.switch_screen(ID_SCREEN_OPTIONS)
+                bot.switch_screen(ID_SCREEN_VIDEOS_SAVED)
+                index_video = 0
+                items = bot.get_items_videos_saved()
+                if len(items) > 1:
+                    index_video = random.randint(0, items.count-1)
+                bot.select_item_video_saved(items[index_video]) 
