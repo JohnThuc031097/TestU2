@@ -1,3 +1,4 @@
+from email import message
 from socket import timeout
 import util
 import handle
@@ -23,6 +24,26 @@ class BotInstagram:
             id_options = self.bot.find_by_desc('Options')
             if id_options.exists(timeout=2):
                 id_options.click()
+        elif id_screen == ID_SCREEN_UPLOAD_REEL:
+            self.switch_screen(ID_SCREEN_PROFILE)
+            id_create = self.bot.find_by_desc('Create New')
+            if id_create.exists(timeout=2):
+                id_create.click()
+                id_reel = self.bot.find_by_desc('Reel')
+                if id_reel.exists(timeout=2):
+                    id_reel.click()
+                    btn_show_items = self.bot.find_by_id(
+                        'dial_ar_effect_picker_left_side_button_container')
+                    if btn_show_items.exists(timeout=2):
+                        btn_show_items.click()
+                        btn_show_items = self.bot.find_by_id(
+                            'gallery_folder_menu')
+                        if btn_show_items.exists(timeout=2):
+                            btn_show_items.click()
+                            items_videos = self.bot.find_by_desc('Videos')
+                            if items_videos.exists(timeout=2):
+                                items_videos.click()
+
         elif id_screen == ID_SCREEN_VIDEOS_SAVED:
             id_saved = self.bot.find_by_desc('Saved')
             if id_saved.exists(timeout=2):
@@ -70,3 +91,23 @@ class BotInstagram:
                 for i in range(users.count-1):
                     data_users[users[i].info['text']] = users[i]
         return data_users
+
+    def download_video(self):
+        util.logger('Download video')
+        btn = self.bot.find_by_id('direct_share_button')
+        if btn.exists(timeout=2):
+            btn.click()
+            btn = self.bot.find_by_desc('Add reel to your story')
+            if btn.exists(timeout=2):
+                btn.click()
+                btn = self.bot.find_by_id('overflow_button')
+                if btn.exists(timeout=2):
+                    btn.click()
+                    btn_save = self.bot.find_by_id('gallery_menu_save')
+                    if btn_save.exists(timeout=2):
+                        btn_save.click()
+                        # waiting download
+                        msg_processing = self.bot.find_by_id('message')
+                        if msg_processing.exists(timeout=2):
+                            msg_processing.wait_gone(timeout=300)
+                            util.logger('Download done!')

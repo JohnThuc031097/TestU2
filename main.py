@@ -16,6 +16,7 @@ if json_setting != None:
                 bot.switch_screen(ID_SCREEN_VIDEOS_SAVED)
                 index_video = 0
                 items = bot.get_items_videos_saved()
-                if len(items) > 1:
+                if items.count > 1:
                     index_video = random.randint(0, items.count-1)
-                bot.select_item_video_saved(items[index_video]) 
+                bot.select_item_video_saved(items[index_video])
+                bot.download_video()
