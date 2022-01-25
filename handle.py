@@ -16,6 +16,10 @@ class HandleU2:
         return self.sess(
             packageName=PACKGE_NAME, description=desc)
 
+    def find_by_text(self, txt):
+        return self.sess(
+            packageName=PACKGE_NAME, text=txt)
+
     def find_child_by_id(self, parent, id_child):
         return parent.sibling(packageName=PACKGE_NAME, resourceId='{}:id/{}'.format(PACKGE_NAME, id_child))
 
@@ -26,3 +30,7 @@ class HandleU2:
     def find_child_by_desc(self, parent, desc):
         return parent.sibling(
             packageName=PACKGE_NAME, description=desc)
+
+    def find_child_by_text(self, parent, txt):
+        return parent.sibling(
+            packageName=PACKGE_NAME, text=txt)
