@@ -1,6 +1,3 @@
-from email import message
-from socket import timeout
-from time import time
 import util
 import handle
 from consts import *
@@ -14,49 +11,31 @@ class BotInstagram:
     def switch_screen(self, id_screen):
         util.logger('Switch screen: {}'.format(id_screen))
         if id_screen == ID_SCREEN_PROFILE:
-            id_profile = self.bot.find_by_id('profile_tab')
-            if id_profile.exists(timeout=2):
-                id_profile.click()
+            return self.bot.find_by_id('profile_tab').click_exists(timeout=2):
         elif id_screen == ID_SCREEN_SELECT_USERS:
             id_profile = self.bot.find_by_id('profile_tab')
             if id_profile.exists(timeout=2):
-                id_profile.long_click()
+                return id_profile.long_click()
+            return False
         elif id_screen == ID_SCREEN_OPTIONS:
-            id_options = self.bot.find_by_desc('Options')
-            if id_options.exists(timeout=2):
-                id_options.click()
+            return self.bot.find_by_desc('Options').click_exists(timeout=2)
         elif id_screen == ID_SCREEN_UPLOAD_REEL:
-            self.switch_screen(ID_SCREEN_PROFILE)
-            id_create = self.bot.find_by_desc('Create New')
-            if id_create.exists(timeout=2):
-                id_create.click()
-                id_reel = self.bot.find_by_desc('Reel')
-                if id_reel.exists(timeout=2):
-                    id_reel.click()
-                    btn_show_items = self.bot.find_by_id(
-                        'dial_ar_effect_picker_left_side_button_container')
-                    if btn_show_items.exists(timeout=2):
-                        btn_show_items.click()
-                        btn_show_items = self.bot.find_by_id(
-                            'gallery_folder_menu')
-                        if btn_show_items.exists(timeout=2):
-                            btn_show_items.click()
-                            items_videos = self.bot.find_by_desc('Videos')
-                            if items_videos.exists(timeout=2):
-                                items_videos.click()
+            if self.switch_screen(ID_SCREEN_PROFILE):
+                if self.bot.find_by_desc('Create New').click_exists(timeout=2):
+                    if self.bot.find_by_desc('Reel').click_exists(timeout=2):
+                        self.bot.find_by_id(
+                            'auxiliary_button').click_exists(timeout=2)
+                        if self.bot.find_by_id('dial_ar_effect_picker_left_side_button_container').click_exists(timeout=2):
+                            if self.bot.find_by_id('gallery_folder_menu').click_exists(timeout=2):
+                                if self.bot.find_by_desc('Instagram').click_exists(timeout=2):
+                                    return True
 
+            return False
         elif id_screen == ID_SCREEN_VIDEOS_SAVED:
-            id_saved = self.bot.find_by_desc('Saved')
-            if id_saved.exists(timeout=2):
-                id_saved.click()
-                id_saved_thumbnail = self.bot.find_by_id(
-                    'saved_collection_thumbnail')
-                if id_saved_thumbnail.exists(timeout=2):
-                    id_saved_thumbnail.click(timeout=5)
-                    id_items_video_saved = self.bot.find_by_desc(
-                        'Saved reels')
-                    if id_items_video_saved.exists(timeout=2):
-                        id_items_video_saved.click(timeout=5)
+            if self.bot.find_by_desc('Saved').click_exists(timeout=2):
+                if self.bot.find_by_id('saved_collection_thumbnail').click_exists(timeout=5):
+                    return self.bot.find_by_desc('Saved reels').click_exists(timeout=5)
+            return False
 
     def remove_video_saved(self, item_selected):
         util.logger('Remove video: Select item')
@@ -66,19 +45,21 @@ class BotInstagram:
                     if self.bot.find_by_id('remove_button').click_exists(timeout=2):
                         self.bot.find_by_text('Unsave').click_exists(timeout=2)
                         util.logger('Remove video: Removed')
+                        return True
+        return False
 
     def set_user(self, user):
         util.logger('Set user: {}'.format(user.info['text']))
-        if not self.bot.find_by_id('bottom_sheet_container_view').exists(timeout=2):
-            self.switch_screen(ID_SCREEN_SELECT_USERS)
-        if user.exists(timeout=2):
-            user.click(timeout=2)
-            if self.bot.find_by_id('bottom_sheet_container_view').exists(timeout=2):
-                self.bot.sess.press('back')
+        if self.switch_screen(ID_SCREEN_SELECT_USERS):
+            if user.click_exists(timeout=2):
+                if self.bot.find_by_id('bottom_sheet_container_view').exists(timeout=2):
+                    self.bot.sess.press('back')
+                    return True
+        return False
 
     def select_item_video_saved(self, item_selected):
         util.logger('Select video: click')
-        item_selected.click_exists(timeout=2)
+        return item_selected.click_exists(timeout=2)
 
     def get_items_videos_saved(self):
         result = []
@@ -94,29 +75,20 @@ class BotInstagram:
     def get_users(self):
         util.logger('Get users')
         data_users = {}
-        if not self.bot.find_by_id('bottom_sheet_container_view').exists(timeout=2):
-            self.switch_screen(ID_SCREEN_SELECT_USERS)
-        users = self.bot.find_by_id('row_user_textview')
-        if users.exists(timeout=2):
-            if users.count > 2:
-                for i in range(users.count-1):
-                    data_users[users[i].info['text']] = users[i]
+        if self.switch_screen(ID_SCREEN_SELECT_USERS):
+            users = self.bot.find_by_id('row_user_textview')
+            if users.exists(timeout=2):
+                if users.count > 2:
+                    for i in range(users.count-1):
+                        data_users[users[i].info['text']] = users[i]
         return data_users
 
     def download_video(self):
         util.logger('Download video: Select video')
-        btn = self.bot.find_by_id('direct_share_button')
-        if btn.exists(timeout=4):
-            btn.click()
-            btn = self.bot.find_by_desc('Add reel to your story')
-            if btn.exists(timeout=10):
-                btn.click()
-                btn = self.bot.find_by_id('overflow_button')
-                if btn.exists(timeout=2):
-                    btn.click()
-                    btn_save = self.bot.find_by_id('gallery_menu_save')
-                    if btn_save.exists(timeout=2):
-                        btn_save.click()
+        if self.bot.find_by_id('direct_share_button').click_exists(timeout=4):
+            if self.bot.find_by_desc('Add reel to your story').click_exists(timeout=10):
+                if self.bot.find_by_id('overflow_button').click_exists(timeout=2):
+                    if self.bot.find_by_id('gallery_menu_save').click_exists(timeout=2):
                         util.logger('Download video: Start')
                         # waiting download
                         msg_processing = self.bot.find_by_id('message')
@@ -130,3 +102,5 @@ class BotInstagram:
                             self.bot.find_by_desc(
                                 'Back').click_exists(timeout=2)
                             util.logger('Download video: End')
+                            return True
+        return False

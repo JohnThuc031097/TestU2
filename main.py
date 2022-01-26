@@ -18,6 +18,6 @@ if json_setting != None:
                 items = bot.get_items_videos_saved()
                 if items.count > 1:
                     index_video = random.randint(0, items.count-1)
-                # bot.select_item_video_saved(items[index_video])
-                # bot.download_video()
+                bot.select_item_video_saved(items[index_video])
+                bot.download_video()
                 bot.remove_video_saved(items[index_video])
