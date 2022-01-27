@@ -8,10 +8,13 @@ class BotInstagram:
         util.logger('Start Bot Instagram v1.0 by ThucNobita')
         self.bot = handle.HandleU2()
 
+    def sess(self):
+        return self.bot.sess
+
     def switch_screen(self, id_screen):
         util.logger('Switch screen: {}'.format(id_screen))
         if id_screen == ID_SCREEN_PROFILE:
-            return self.bot.find_by_id('profile_tab').click_exists(timeout=2):
+            return self.bot.find_by_id('profile_tab').click_exists(timeout=2)
         elif id_screen == ID_SCREEN_SELECT_USERS:
             id_profile = self.bot.find_by_id('profile_tab')
             if id_profile.exists(timeout=2):
@@ -49,19 +52,21 @@ class BotInstagram:
         return False
 
     def set_user(self, user):
-        util.logger('Set user: {}'.format(user.info['text']))
+        util.logger('Set user')
         if self.switch_screen(ID_SCREEN_SELECT_USERS):
             if user.click_exists(timeout=2):
+                util.logger('=> User: {}'.format(user.info['text']))
                 if self.bot.find_by_id('bottom_sheet_container_view').exists(timeout=2):
                     self.bot.sess.press('back')
                     return True
         return False
 
     def select_item_video_saved(self, item_selected):
-        util.logger('Select video: click')
+        util.logger('Select item video saved')
         return item_selected.click_exists(timeout=2)
 
-    def get_items_videos_saved(self):
+    def get_items_video_saved(self):
+        util.logger('Get items video saved')
         result = []
         id_items_videos_saved = self.bot.find_by_id(
             'clips_tab_grid_recyclerview')
@@ -70,6 +75,7 @@ class BotInstagram:
                 id_items_videos_saved, 'android.widget.RelativeLayout')
             if items.exists(timeout=2):
                 result = items
+        util.logger('=> Total: {}'.format(result.count))
         return result
 
     def get_users(self):
@@ -77,10 +83,12 @@ class BotInstagram:
         data_users = {}
         if self.switch_screen(ID_SCREEN_SELECT_USERS):
             users = self.bot.find_by_id('row_user_textview')
-            if users.exists(timeout=2):
+            if users.exists(timeout=10):
                 if users.count > 2:
                     for i in range(users.count-1):
                         data_users[users[i].info['text']] = users[i]
+                    self.bot.sess.press('back')
+        util.logger('=> Total: {}'.format(len(data_users)))
         return data_users
 
     def download_video(self):
@@ -103,4 +111,15 @@ class BotInstagram:
                                 'Back').click_exists(timeout=2)
                             util.logger('Download video: End')
                             return True
+        return False
+
+    def download_video_by_login(self, item, account):
+        util.logger('Download video by login')
+        if self.select_item_video_saved(item):
+            if self.bot.find_by_desc('More').click_exists(timeout=4):
+                if self.bot.find_by_text('Copy Link').click_exists(timeout=4):
+                    util.logger('=> Link: {}'.format(
+                        self.bot.sess.clipboard))
+                    self.bot.find_by_desc('Back').click_exists(timeout=2)
+                    return True
         return False

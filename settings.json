@@ -1,16 +1,24 @@
 {
-    "users": [
-        "johnthuc03101997"
-    ],
+    "users": {
+        "bot": [
+            "johnthuc03101997",
+            "rowing_fan"
+        ],
+        "login": {
+            "username": "rowing_fan",
+            "password": "UuyJYd5!",
+            "session": ""
+        }
+    },
     "post": {
-        "1": "From @",
-        "2": [
+        "header": "From @",
+        "contents": [
             "follow me",
             "It's me",
             "Warrior me",
             "Kill me, Please !"
         ],
-        "3": [
+        "footer": [
             "#test #auto #bot",
             "#tool #auto #nobita"
         ]
